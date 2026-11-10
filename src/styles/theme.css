@@ -1,0 +1,19 @@
+
+:root {
+  /* Official Sunbrewed palette */
+  --sun-yellow: #F7B01F;
+  --sun-teal: #00B2B7;
+  --sun-orange: #EF9D2F;
+  --sun-red: #E43C37;
+  --sun-purple: #683F8C;
+  --sun-green: #008C5F;
+
+  /* Hybrid punk foundation */
+  --punk-black: #202020;
+  --punk-paper: #F5F1E8;
+  --punk-white: #FFFFFF;
+  --punk-muted: #68645E;
+  --punk-border: #202020;
+
+  --shadow-punk: 4px 4px 0 var(--punk-black);
+}

@@ -1,0 +1,120 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--punk-paper);
+  color: var(--punk-black);
+}
+
+.login-shell {
+  width: min(100%, 460px);
+  background: var(--punk-black);
+  padding: 28px;
+  border: 3px solid var(--punk-black);
+  box-shadow: 8px 8px 0 var(--sun-purple);
+}
+
+.login-header {
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  color: var(--sun-yellow);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.login-header h1 {
+  margin: 12px 0;
+  color: white;
+  font-size: clamp(32px, 7vw, 46px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -1.5px;
+}
+
+.login-header p {
+  color: var(--sun-teal);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: var(--punk-paper);
+}
+
+.login-card h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.login-card p {
+  margin: 0 0 8px;
+}
+
+.login-card label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.login-card input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 12px;
+  border: 2px solid var(--punk-black);
+  border-radius: 0;
+  background: white;
+  color: var(--punk-black);
+  font: inherit;
+}
+
+.login-card input:focus-visible {
+  outline: 3px solid var(--sun-teal);
+  outline-offset: 2px;
+}
+
+.login-card button {
+  margin-top: 12px;
+  min-height: 48px;
+  padding: 14px;
+  border: 2px solid var(--punk-black);
+  background: var(--sun-yellow);
+  color: var(--punk-black);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--punk-black);
+}
+
+.login-card button:hover:not(:disabled) {
+  background: var(--sun-orange);
+}
+
+.login-card button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.login-error {
+  color: #A61B17;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .login-shell {
+    padding: 18px;
+    box-shadow: 5px 5px 0 var(--sun-purple);
+  }
+
+  .login-card {
+    padding: 18px;
+  }
+}
