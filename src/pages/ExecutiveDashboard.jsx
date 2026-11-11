@@ -18,6 +18,7 @@ import { signOut } from 'firebase/auth'
 import { auth, db } from '../firebase'
 import { collection, onSnapshot } from 'firebase/firestore'
 import AddTaskModal from '../components/AddTaskModal'
+import TasksPage from './TasksPage'
 import './ExecutiveDashboard.css'
 
 
@@ -45,12 +46,10 @@ export default function ExecutiveDashboard({ profile }) {
         const unsubscribe = onSnapshot(
             collection(db, 'tasks'),
             snapshot => {
-                const nextTasks = snapshot.docs
-                    .map(document => ({
-                        id: document.id,
-                        ...document.data()
-                    }))
-                    .filter(task => task.active === true)
+                const nextTasks = snapshot.docs.map(document => ({
+                    id: document.id,
+                    ...document.data()
+                }))
 
                 setTasks(nextTasks)
                 setTasksLoading(false)
@@ -66,24 +65,25 @@ export default function ExecutiveDashboard({ profile }) {
         return () => unsubscribe()
     }, [])
 
+    const activeTasks = tasks.filter(task => task.active === true)
 
 
-    const available = tasks.filter(
+
+    const available = activeTasks.filter(
         task => task.status === 'available'
     ).length
 
-    const inProgress = tasks.filter(
+    const inProgress = activeTasks.filter(
         task => task.status === 'in-progress'
     ).length
 
-    const completed = tasks.filter(
+    const completed = activeTasks.filter(
         task => task.status === 'completed'
     ).length
 
-    const filteredTasks = tasks.filter(
+    const filteredTasks = activeTasks.filter(
         task => taskFilter === 'all' || task.status === taskFilter
     )
-
 
     async function handleSignOut() {
         try {
@@ -174,7 +174,7 @@ export default function ExecutiveDashboard({ profile }) {
                         <section className="dashboard-stats">
                             <StatCard
                                 label="TOTAL TASKS"
-                                value={tasks.length}
+                                value={activeTasks.length}
                                 color="yellow"
                                 icon={ClipboardList}
                                 active={taskFilter === 'all'}
@@ -277,13 +277,15 @@ export default function ExecutiveDashboard({ profile }) {
                             </div>
                         </section>
                     </>
+                ) : activePage === 'Tasks' ? (
+                    <TasksPage
+                        tasks={tasks}
+                        onAddTask={() => setShowAddTask(true)}
+                    />
                 ) : (
                     <section className="placeholder-panel">
                         <h3>{activePage.toUpperCase()}</h3>
-                        <p>
-                            This section is coming next. The dashboard is
-                            our first development milestone.
-                        </p>
+                        <p>This section is coming next.</p>
                     </section>
                 )}
             </main>
