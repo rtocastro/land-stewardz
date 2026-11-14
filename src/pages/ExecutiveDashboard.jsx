@@ -41,6 +41,24 @@ export default function ExecutiveDashboard({ profile }) {
     const [tasksLoading, setTasksLoading] = useState(true)
     const [tasksError, setTasksError] = useState('')
     const [showAddTask, setShowAddTask] = useState(false)
+    const [editingTask, setEditingTask] = useState(null)
+
+
+    function openAddTask() {
+        setEditingTask(null)
+        setShowAddTask(true)
+    }
+
+    function openEditTask(task) {
+        setEditingTask(task)
+        setShowAddTask(true)
+    }
+
+    function closeTaskModal() {
+        setShowAddTask(false)
+        setEditingTask(null)
+    }
+
 
     useEffect(() => {
         const unsubscribe = onSnapshot(
@@ -224,14 +242,13 @@ export default function ExecutiveDashboard({ profile }) {
 
                                 <button
                                     className="add-task-button"
-                                    onClick={() => setShowAddTask(true)}
+                                    onClick={openAddTask}
                                 >
                                     <Plus size={18} />
                                     MANAGE TASKS
                                 </button>
-                                {showAddTask && (
-                                    <AddTaskModal onClose={() => setShowAddTask(false)} />
-                                )}
+
+
                             </div>
 
 
@@ -278,20 +295,34 @@ export default function ExecutiveDashboard({ profile }) {
                         </section>
                     </>
                 ) : activePage === 'Tasks' ? (
+
                     <TasksPage
                         tasks={tasks}
-                        onAddTask={() => setShowAddTask(true)}
+                        onAddTask={openAddTask}
+                        onEditTask={openEditTask}
                     />
+
                 ) : (
                     <section className="placeholder-panel">
                         <h3>{activePage.toUpperCase()}</h3>
                         <p>This section is coming next.</p>
                     </section>
                 )}
+
             </main>
+
+            {showAddTask && (
+                <AddTaskModal
+                    key={editingTask?.id || 'new-task'}
+                    task={editingTask}
+                    onClose={closeTaskModal}
+                />
+            )}
+
         </div>
     )
 }
+
 
 
 function StatCard({

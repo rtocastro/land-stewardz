@@ -218,3 +218,46 @@
     width: 100%;
   }
 }
+
+
+.managed-task-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.managed-edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 2px solid var(--punk-black);
+  background: var(--sun-teal);
+  color: var(--punk-black);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.managed-edit-button:hover {
+  background: var(--sun-yellow);
+}
+
+.managed-edit-button:focus-visible {
+  outline: 3px solid var(--sun-purple);
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .managed-task-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .managed-edit-button {
+    width: 100%;
+  }
+}
