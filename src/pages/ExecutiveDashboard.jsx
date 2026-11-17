@@ -19,6 +19,7 @@ import { auth, db } from '../firebase'
 import { collection, onSnapshot } from 'firebase/firestore'
 import AddTaskModal from '../components/AddTaskModal'
 import TasksPage from './TasksPage'
+import VolunteerDashboard from './VolunteerDashboard'
 import './ExecutiveDashboard.css'
 
 
@@ -42,6 +43,7 @@ export default function ExecutiveDashboard({ profile }) {
     const [tasksError, setTasksError] = useState('')
     const [showAddTask, setShowAddTask] = useState(false)
     const [editingTask, setEditingTask] = useState(null)
+    const [volunteerPreview, setVolunteerPreview] = useState(false)
 
 
     function openAddTask() {
@@ -111,6 +113,19 @@ export default function ExecutiveDashboard({ profile }) {
         }
     }
 
+
+    if (volunteerPreview) {
+        return (
+            <VolunteerDashboard
+                profile={profile}
+                tasks={tasks}
+                onBack={() => setVolunteerPreview(false)}
+                onSignOut={handleSignOut}
+            />
+        )
+    }
+
+
     return (
         <div className="stewardz-app">
             <aside className={`stewardz-sidebar ${menuOpen ? 'open' : ''}`}>
@@ -122,6 +137,7 @@ export default function ExecutiveDashboard({ profile }) {
 
                 <nav aria-label="Main navigation">
                     {navigation.map(({ label, icon: Icon }) => (
+
                         <button
                             key={label}
                             className={`nav-link ${activePage === label ? 'active' : ''
@@ -135,6 +151,20 @@ export default function ExecutiveDashboard({ profile }) {
                             {label}
                         </button>
                     ))}
+
+
+                    <button
+                        type="button"
+                        className="nav-link"
+                        onClick={() => {
+                            setVolunteerPreview(true)
+                            setMenuOpen(false)
+                        }}
+                    >
+                        <Sprout size={19} />
+                        VOLUNTEER VIEW
+                    </button>
+
                 </nav>
 
                 <div className="sidebar-footer">

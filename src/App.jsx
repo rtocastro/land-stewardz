@@ -1,10 +1,11 @@
 
 import { useEffect, useState } from 'react'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, collection, onSnapshot } from 'firebase/firestore'
 import { auth, db } from './firebase'
 import Login from './components/Login'
 
+import VolunteerDashboard from './pages/VolunteerDashboard'
 import ExecutiveDashboard from './pages/ExecutiveDashboard'
 
 export default function App() {
@@ -12,6 +13,36 @@ export default function App() {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [volunteerTasks, setVolunteerTasks] = useState([])
+  const [volunteerTasksError, setVolunteerTasksError] = useState('')
+
+
+  useEffect(() => {
+    if (!user || profile?.role !== 'volunteer' || profile.active !== true) {
+      setVolunteerTasks([])
+      return
+    }
+
+    const unsubscribe = onSnapshot(
+      collection(db, 'tasks'),
+      snapshot => {
+        setVolunteerTasks(
+          snapshot.docs.map(document => ({
+            id: document.id,
+            ...document.data()
+          }))
+        )
+        setVolunteerTasksError('')
+      },
+      error => {
+        console.error('Volunteer task listener failed:', error)
+        setVolunteerTasksError('Unable to load volunteer tasks.')
+      }
+    )
+
+    return () => unsubscribe()
+  }, [user, profile])
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -76,6 +107,22 @@ export default function App() {
     return <ExecutiveDashboard profile={profile} />
   }
 
+  if (profile.role === 'volunteer') {
+  return (
+    <>
+      {volunteerTasksError && (
+        <p role="alert">{volunteerTasksError}</p>
+      )}
+      <VolunteerDashboard
+        profile={profile}
+        tasks={volunteerTasks}
+        onSignOut={() => signOut(auth)}
+      />
+    </>
+  )
+}
+
+
   return (
     <main style={{ padding: '24px' }}>
       <h1>LAND STEWARDZ!</h1>
@@ -87,3 +134,6 @@ export default function App() {
   )
 
 }
+
+
+
