@@ -13,6 +13,7 @@ import {
     AlertCircle
 } from 'lucide-react'
 import { claimTask } from '../services/taskClaims'
+import { auth } from '../firebase'
 import './VolunteerDashboard.css'
 
 const categories = [
@@ -55,6 +56,14 @@ export default function VolunteerDashboard({
     const availableTasks = tasks
         .filter(task => task.active === true && task.status === 'available')
         .filter(task => category === 'All' || task.category === category)
+        .sort((a, b) => a.title.localeCompare(b.title))
+
+    const myMissions = tasks
+        .filter(task =>
+            task.active === true &&
+            task.status === 'in-progress' &&
+            task.assignedTo === auth.currentUser?.uid
+        )
         .sort((a, b) => a.title.localeCompare(b.title))
 
 
@@ -109,6 +118,80 @@ export default function VolunteerDashboard({
                         that works for you. Every little bit helps the homestead grow.
                     </p>
                 </section>
+
+
+                <section
+                    className="volunteer-my-missions"
+                    aria-labelledby="my-missions-title"
+                >
+                    <div className="volunteer-board-heading">
+                        <div>
+                            <span>YOUR PERSONAL TASK BOARD</span>
+                            <h3 id="my-missions-title">MY MISSIONS</h3>
+                        </div>
+
+                        <strong>
+                            {myMissions.length} IN PROGRESS
+                        </strong>
+                    </div>
+
+                    {myMissions.length === 0 ? (
+                        <div className="volunteer-my-empty">
+                            <p>
+                                No missions claimed yet. Pick something from
+                                Available Missions below to get started!
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="volunteer-task-grid">
+                            {myMissions.map(task => {
+                                const { Icon, color } = getAppearance(task.category)
+
+                                return (
+                                    <article
+                                        className="volunteer-task-card my-mission-card"
+                                        key={task.id}
+                                    >
+                                        <div className={`volunteer-task-icon ${color}`}>
+                                            <Icon size={27} />
+                                        </div>
+
+                                        <span className="volunteer-task-category">
+                                            {task.category || 'Other'}
+                                        </span>
+
+                                        <h4>{task.title}</h4>
+
+                                        <span className="my-mission-status">
+                                            IN PROGRESS
+                                        </span>
+
+                                        <div className="volunteer-task-details">
+                                            <span>
+                                                <Clock3 size={16} />
+                                                {task.estimatedMinutes ?? 10} min
+                                            </span>
+
+                                            <span>
+                                                <Hand size={16} />
+                                                {task.difficulty || 'light'} effort
+                                            </span>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            className="volunteer-view-button"
+                                            onClick={() => setSelectedTask(task)}
+                                        >
+                                            VIEW MY MISSION
+                                        </button>
+                                    </article>
+                                )
+                            })}
+                        </div>
+                    )}
+                </section>
+
 
                 <section className="volunteer-board" aria-labelledby="volunteer-board-title">
                     <div className="volunteer-board-heading">
@@ -226,20 +309,41 @@ export default function VolunteerDashboard({
                         </div>
 
 
-                        {claimError && (
-                            <p role="alert" className="volunteer-claim-error">
-                                {claimError}
-                            </p>
+
+                        {selectedTask.status === 'in-progress' &&
+                            selectedTask.assignedTo === auth.currentUser?.uid ? (
+                            <div className="my-mission-confirmation">
+                                <CheckCircle2 size={22} />
+                                <div>
+                                    <strong>MISSION CLAIMED!</strong>
+                                    <p>
+                                        This mission is assigned to you.
+                                        Check the instructions above and get to work!
+                                    </p>
+                                </div>
+                            </div>
+                        ) : selectedTask.status === 'available' &&
+                            selectedTask.active === true ? (
+                            <>
+                                {claimError && (
+                                    <p role="alert" className="volunteer-claim-error">
+                                        {claimError}
+                                    </p>
+                                )}
+
+                                <button
+                                    type="button"
+                                    className="volunteer-claim-button"
+                                    disabled={claiming}
+                                    onClick={handleClaimTask}
+                                >
+                                    {claiming ? 'CLAIMING MISSION...' : 'CLAIM MISSION'}
+                                </button>
+                            </>
+                        ) : (
+                            <p>This mission is no longer available.</p>
                         )}
 
-                        <button
-                            type="button"
-                            className="volunteer-claim-button"
-                            disabled={claiming}
-                            onClick={handleClaimTask}
-                        >
-                            {claiming ? 'CLAIMING MISSION...' : 'CLAIM MISSION'}
-                        </button>
 
                     </section>
                 </div>
